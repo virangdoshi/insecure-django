@@ -44,7 +44,13 @@ def run(request):
 		msg = ""		
 		if request.content_type == "application/json":
 			body = json.loads(request.body)
-			os.system(body["instructions"])
+			# TODO: Update this list to include allowable commands
+			allowed_commands = ['ls', 'pwd']
+			command = body["instructions"].split()
+			if command[0] not in allowed_commands:
+				return HttpResponse("Invalid command", status=400)
+			else:
+				os.system(command)
 			context = {"msg": "Instructions have been run"}
 			response = render(request, 'run.html', context)
 			response["Access-Control-Allow-Origin"] = request.headers.get("Origin")
@@ -57,7 +63,6 @@ def run(request):
 			return HttpResponse(msg)
 	else:
 		return HttpResponse("Only OPTIONS and POST methods are supported")
-
 
 
 def isAuthenticated(request):
@@ -101,7 +106,6 @@ def chg_pwd_post(request):
 	else:
 		return HttpResponse("Only POST method is supported")
 
-
 @csrf_exempt
 def chg_pwd_json(request):
 
@@ -125,7 +129,6 @@ def chg_pwd_json(request):
 
 	else:
 		return HttpResponse("Only POST method is supported")
-
 
 
 @csrf_exempt
